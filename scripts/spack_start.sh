@@ -13,6 +13,7 @@ if ! $(type '_spack_start_called' 2>/dev/null | grep -q 'function'); then
   export SPACK_USER_CACHE_PATH=${SPACK_MANAGER}/.cache
   export SPACK_USER_CONFIG_PATH=${SPACK_MANAGER}/.spack
   source ${SPACK_ROOT}/share/spack/setup-env.sh
+  source ${SPACK_MANAGER}/spack-manager/scripts/quick_commands.sh
 
   # Clean Spack misc caches
   # Put this back in if outdated caches directory still causes problems when updating Spack submodule
