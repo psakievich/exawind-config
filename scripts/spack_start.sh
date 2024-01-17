@@ -7,6 +7,11 @@
 # This software is released under the BSD 3-clause license. See LICENSE file
 # for more details.
 #
+#
+function install_spack_manager(){
+  git clone --branch develop https://github.com/sandialabs/spack-manager $SPACK_ROOT/../spack-manager
+  spack config --scope site add "config:extensions:[${SPACK_MANAGER}/spack-manager]"
+}
 
 if ! $(type '_spack_start_called' 2>/dev/null | grep -q 'function'); then
   export SPACK_ROOT=${SPACK_MANAGER}/spack
@@ -29,8 +34,7 @@ if ! $(type '_spack_start_called' 2>/dev/null | grep -q 'function'); then
   fi
 
   if [[ -z $(spack config --scope site blame config | grep spack-manager) ]]; then
-    spack config --scope site add "config:extensions:[${SPACK_MANAGER}/spack-manager]"
-    spack config --scope site add "concretizer:unify:false"
+    install_spack_manager
   fi
 
   if [[ -z $(spack config --scope site blame concretizer | grep 'unify:false') ]]; then
@@ -47,10 +51,6 @@ if ! $(type '_spack_start_called' 2>/dev/null | grep -q 'function'); then
     fi
   fi
 
-  export SPACK_MANAGER_MACHINE=$(spack manager find-machine)
-  if [[ "${SPACK_MANAGER_MACHINE}" == "NOT-FOUND" ]]; then
-    echo "Machine not found."
-  fi
   export PATH=${PATH}:${SPACK_MANAGER}/scripts
   # define a function since environment variables are sometimes preserved in a subshell but functions aren't
   # see https://github.com/psakievich/spack-manager/issues/210

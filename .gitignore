@@ -1,5 +1,6 @@
 # directories
 spack
+spack-manager
 stage
 snapshots
 environments
