@@ -9,8 +9,9 @@ from spack import *
 from spack.pkg.builtin.nalu_wind import NaluWind as bNaluWind
 from spack.pkg.builtin.kokkos import Kokkos
 import os
-from manager_cmds.find_machine import find_machine
-from smpackages import *
+import importlib
+find_machine = importlib.import_module("find-exawind-configs")
+from spack.pkg.exawind.cmake_extension import *
 
 
 def trilinos_version_filter(name):
@@ -20,7 +21,7 @@ def trilinos_version_filter(name):
     else:
         return "stable"
 
-class NaluWind(SMCMakeExtension, bNaluWind, ROCmPackage):
+class NaluWind(CmakeExtension, bNaluWind, ROCmPackage):
     version("master", branch="master", submodules=True)
     version("multiphase", branch="multiphase_dev", submodules=True)
 
@@ -89,10 +90,10 @@ class NaluWind(SMCMakeExtension, bNaluWind, ROCmPackage):
         cmake_options.append(self.define_from_variant("CMAKE_CXX_STANDARD", "cxxstd"))
         cmake_options.append(self.define_from_variant("BUILD_SHARED_LIBS", "shared"))
 
-        if find_machine(verbose=False) == "eagle" and "%intel" in spec:
+        if find_machine.detector("eagle") and "%intel" in spec:
             cmake_options.append(self.define("ENABLE_UNIT_TESTS", False))
 
-        if find_machine(verbose=False) == "crusher":
+        if find_machine.detector("crusher"):
             cmake_options.append(self.define("MPIEXEC_EXECUTABLE", "srun"))
             cmake_options.append(self.define("MPIEXEC_NUMPROC_FLAG", "--ntasks"))
 

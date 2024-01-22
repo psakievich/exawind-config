@@ -11,6 +11,7 @@
 function install_spack_manager(){
   git clone --branch develop https://github.com/sandialabs/spack-manager $SPACK_ROOT/../spack-manager
   spack config --scope site add "config:extensions:[${SPACK_MANAGER}/spack-manager]"
+  spack manager add ${SPACK_MANAGER}
 }
 
 if ! $(type '_spack_start_called' 2>/dev/null | grep -q 'function'); then
@@ -28,8 +29,8 @@ if ! $(type '_spack_start_called' 2>/dev/null | grep -q 'function'); then
     spack bootstrap root ${SPACK_MANAGER}/.bootstrap
   fi
 
-  if [[ -z $(spack config blame config | grep "environments_root: ${SPACK_MANAGER}/environments") ]]; then
-    spack config add config:environments_root:${SPACK_MANAGER}/environments
+  if [[ -z $(spack config --scope site blame config | grep "environments_root: ${SPACK_MANAGER}/environments") ]]; then
+    spack config --scope site add config:environments_root:${SPACK_MANAGER}/environments
   fi
 
   if [[ -z $(spack config --scope site blame config | grep spack-manager) ]]; then
@@ -52,6 +53,8 @@ if ! $(type '_spack_start_called' 2>/dev/null | grep -q 'function'); then
 
   source ${SPACK_MANAGER}/spack-manager/scripts/quick_commands.sh
   export PATH=${PATH}:${SPACK_MANAGER}/scripts
+  # needed for package imports
+  export PYTHONPATH=${PYTHONPATH}:${SPACK_MANAGER}
   # define a function since environment variables are sometimes preserved in a subshell but functions aren't
   # see https://github.com/psakievich/spack-manager/issues/210
   function _spack_start_called(){

@@ -8,11 +8,11 @@
 from spack import *
 from spack.pkg.builtin.trilinos import Trilinos as bTrilinos
 import os
-import manager_cmds.find_machine as fm
-from manager_cmds.find_machine import find_machine
-from smpackages import *
+import importlib
+from spack.pkg.exawind.cmake_extension import *
+find_machine = importlib.import_module("find-exawind-configs")
 
-class Trilinos(bTrilinos, SMCMakeExtension):
+class Trilinos(bTrilinos, CmakeExtension):
     # Our custom release versions should be the latest release tag found on
     # the trilinos github page appended with the date of the commit.
     # this preserves the Trilinos versioning scheme and will allow for valid
@@ -33,7 +33,7 @@ class Trilinos(bTrilinos, SMCMakeExtension):
     patch("rocm_seacas.patch", when="@develop+rocm")
     patch("kokkos_hip_subview.patch", when="@develop+rocm")
 
-    if find_machine(verbose=False, full_machine_name=False) == "eagle":
+    if find_machine.detector("eagle"):
         patch("stk-coupling-versions-func-overload.patch", when="@13.3.0:13.4.0.2022.12.15")
 
     def setup_build_environment(self, env):
@@ -74,7 +74,7 @@ class Trilinos(bTrilinos, SMCMakeExtension):
 
     def flag_handler(self, name, flags):
         base_flags = bTrilinos.flag_handler(self, name, flags)
-        if find_machine(verbose=False, full_machine_name=False) == "perlmutter":
+        if find_machine.detector("perlmutter"):
             expt_lambda_flag = "--expt-extended-lambda"
             if expt_lambda_flag in base_flags[0]:
                 updated_flags = base_flags[0].remove(expt_lambda_flag)

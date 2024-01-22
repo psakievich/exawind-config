@@ -7,9 +7,9 @@
 
 from spack import *
 import os
-from smpackages import *
+from spack.pkg.exawind.cmake_extension import *
 
-class TiogaUtils(SMCMakeExtension):
+class TiogaUtils(CmakeExtension):
     git = "https://github.com/Exawind/tioga_utils.git"
 
     version("exawind", branch="exawind")

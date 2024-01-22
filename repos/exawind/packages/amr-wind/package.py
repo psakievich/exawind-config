@@ -8,9 +8,9 @@
 from spack import *
 from spack.pkg.builtin.amr_wind import AmrWind as bAmrWind
 import os
-from smpackages import *
+from spack.pkg.exawind.cmake_extension import *
 
-class AmrWind(SMCMakeExtension, bAmrWind):
+class AmrWind(CmakeExtension, bAmrWind):
     version("multiphase", branch="multiphase_dev", submodules=True)
     
     variant("asan", default=False,

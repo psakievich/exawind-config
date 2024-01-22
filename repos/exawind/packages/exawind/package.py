@@ -9,10 +9,10 @@ from spack import *
 #from spack.pkg.builtin.exawind import Exawind as bExawind
 from shutil import copyfile
 import os
-from smpackages import *
+from spack.pkg.exawind.cmake_extension import *
 
 
-class Exawind(SMCMakeExtension, CudaPackage, ROCmPackage):
+class Exawind(CmakeExtension, CudaPackage, ROCmPackage):
     """Multi-application driver for Exawind project."""
 
     homepage = "https://github.com/Exawind/exawind-driver"
