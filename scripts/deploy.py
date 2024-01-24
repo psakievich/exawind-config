@@ -17,8 +17,8 @@ manager = spack.main.SpackCommand("manager")
 env = spack.main.SpackCommand("env")
 config = spack.main.SpackCommand("config")
 concretize = spack.main.SpackCommand("concretize")
-stage = spack.main.SpackCommand("stage")
-install = spack.main.SpackCommand("stage")
+fetch = spack.main.SpackCommand("fetch")
+install = spack.main.SpackCommand("install")
 module = spack.main.SpackCommand("module")
 make = spack.util.executable.which("make")
 
@@ -52,9 +52,11 @@ def setup(args):
 
 def configure_env(args):
     with ev.read(daystr) as e:
-        config("add", "modules:default:tcl:projections:all:'\{name\}-\{version\}/{date}/\{hash:4\}'")
+        module_projection = '{name}-{version}/'+'{}'.format(datestr)+'/{hash:4}'
+        config("add", "modules:default:tcl:projections:all:'{}'".format(module_projection})
         concretize("--force")
         env("depfile", "-o", os.path.join(e.path, "Makefile"))
+        fetch()
 
 def dependency_install_args(ranks):
     with ev.read(daystr) as e:
@@ -63,7 +65,7 @@ def dependency_install_args(ranks):
             make_args = [
                 "-j{}".format(ranks),
                 "install-deps/{}".format(root.format("{name}-{version}-{hash}")),
-                "SPACK_INSTALL_FLAGS={}".format("--keep-stage"),
+                "SPACK_INSTALL_FLAGS='{}'".format("--keep-stage"),
             ]
             dep_args.append(make_args)
         return dep_args
@@ -98,7 +100,7 @@ def root_install_args(ranks, tests=False, cdash=False):
             make_args = [
                 "-j{}".format(ranks),
                 "install/{}".format(root.format("{name}-{version}-{hash}")),
-                "SPACK_INSTALL_FLAGS={}".format(" ".join(install_args)),
+                "SPACK_INSTALL_FLAGS='{}'".format(" ".join(install_args)),
             ]
             all_args.append(make_args)
         return all_args
@@ -127,13 +129,13 @@ def create_slurm_file(args):
 
         dep_arg_set = dependency_install_args(args.ranks)
         for dep_args in dep_arg_set:
-            f.write("make" + " ".join(dep_args)+"\n")
+            f.write("make " + " ".join(dep_args)+"\n")
 
         root_arg_set = root_install_args(args.ranks, args.tests, args.cdash)
         for root_args in root_arg_set:
-            f.write("make" + " ".join(root_args)+"\n")
+            f.write("make " + " ".join(root_args)+"\n")
         f.write("spack module tcl refresh -y")
-        
+
 
 def module_gen(args):
     with ev.read(daystr) as e:
