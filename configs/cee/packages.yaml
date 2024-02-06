@@ -1,5 +1,8 @@
 packages:
   all:
+    permissions:
+      read: group
+      group: wg-sierra-users
     compiler: [gcc, clang, intel]
     providers:
       mpi: [openmpi]

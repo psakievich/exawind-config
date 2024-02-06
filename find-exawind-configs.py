@@ -27,7 +27,7 @@ def is_cee(hostname):
     return detected
 
 
-def is_snl_hpc(hostname):
+def is_cts_1(hostname):
     known_hosts = ("skybridge", "ghost", "attaway", "chama")
     for k in known_hosts:
         if k in hostname:
@@ -65,7 +65,7 @@ match
 machine_list = {
     # SNL
     "cee": MachineData(lambda: is_cee(socket.gethostname()), socket.gethostname()),
-    "snl-hpc": MachineData(lambda: is_snl_hpc(socket.gethostname()), socket.gethostname()),
+    "cts-1": MachineData(lambda: is_cts_1(socket.gethostname()), socket.gethostname()),
     # NREL
     "kestrel": MachineData(
         lambda: os.environ["NREL_CLUSTER"] == "kestrel", "kestrel.hpc.nrel.gov"
